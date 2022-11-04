@@ -6,10 +6,10 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ['flavour', 'price', 'size']
     
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['customer', 'total_amount', 'order_status', 'transaction_id']
+    list_display = ['customer', 'total_amount', 'order_status']
     
 class OrderItemsAdmin(admin.ModelAdmin):
-    list_display = ['cartorder', 'product', 'price', 'quantity']
+    list_display = ['product', 'price', 'quantity']
     
 class TransactionAdmin(admin.ModelAdmin):
     list_display=['customer', 'ref', 'status', 'type', 'payment_type', 'currency']
