@@ -66,11 +66,18 @@ class OrderListView(generics.ListAPIView):
     permission_classes = [IsAdminUser]
     pagination_class = PageNumberPagination
     
-    # @swagger_auto_schema(operation_summary="View all orders")
-    # def get(self, request):
-    #     orders = Order.objects.all()
-    #     serializers = self.serializer_class(instance=orders, many=True)
-    #     return Response({"status": True, "message": "Orders retreived successfully", "data": serializers.data})
+    @swagger_auto_schema(operation_summary="View all orders")
+    def get(self, request):
+        orders = Order.objects.all()
+        
+        paginator = PageNumberPagination()
+        paginator.page_size = 10
+        result_page = paginator.paginate_queryset(orders,request)
+        
+        serializer = self.serializer_class(result_page, many=True)
+        
+        return paginator.get_paginated_response(serializer.data)
+       
     
 class OrderDetailView(generics.GenericAPIView):
     serializer_class = OrderDetailSerializer
@@ -97,7 +104,6 @@ class UpdateOrderStatus(generics.GenericAPIView):
         
         serializer=self.serializer_class(instance=order, data=request.data)
        
-        
         if serializer.is_valid():
             
             serializer.save()
@@ -124,9 +130,14 @@ class UserOrdersView(generics.GenericAPIView):
         user = User.objects.get(pk=user_id)
         orders = Order.objects.all().filter(customer=user)
         
-        serializers = self.serializer_class(instance=orders, many=True)
+        paginator = PageNumberPagination()
+        paginator.page_size = 10
+        result_page = paginator.paginate_queryset(orders,request)
         
-        return Response({"status": True, "message": "Users orders retreived successfully", "data": serializers.data}, status=status.HTTP_200_OK)
+        serializer = self.serializer_class(result_page, many=True)
+        
+        return paginator.get_paginated_response(serializer.data)
+     
 
 
 class UsersOrderDetailView(generics.GenericAPIView):
