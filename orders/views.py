@@ -11,7 +11,7 @@ from django.conf import settings
 import requests
 import random
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework.decorators import permission_classes
+from django.core.mail import send_mail 
 
 # Create your views here.
 User = get_user_model()
@@ -154,13 +154,24 @@ class UpdateOrderStatus(generics.GenericAPIView):
         order = get_object_or_404(Order, pk=order_id)
         transaction_status=order.transaction.status
        
+        print(order.customer.email)
+       
         if transaction_status !='success':
             return Response({"status": False, "message": "You cannot update an order status whose transaction is pending"}, status=status.HTTP_400_BAD_REQUEST)
         
         serializer=self.serializer_class(instance=order, data=request.data)
+       
         
         if serializer.is_valid():
+            
             serializer.save()
+            print(serializer.data['order_status'])
+            send_mail(
+                'Order status Tracking',
+                f'Hi {order.customer.username}, Your order status at this point is: ' + str(serializer.data['order_status'].replace('_', ' ')),
+                'felixdecoder2020@gmail.com',
+                [order.customer.email]
+            )
             return Response({"status": True, "message": "Order status updated successfuly", "data": serializer.data}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST,data=serializer.errors)
 
@@ -195,6 +206,7 @@ class UsersOrderDetailView(generics.GenericAPIView):
         serializer = self.serializer_class(instance=order)
         
         return Response({"status": True, "message": "User order retreived successfully", "data": serializer.data}, status=status.HTTP_200_OK)
+
         
     
 
