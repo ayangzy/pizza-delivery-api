@@ -165,14 +165,16 @@ class UpdateOrderStatus(generics.GenericAPIView):
         if serializer.is_valid():
             
             serializer.save()
-            print(serializer.data['order_status'])
+            
             send_mail(
                 'Order status Tracking',
-                f'Hi {order.customer.username}, Your order status at this point is: ' + str(serializer.data['order_status'].replace('_', ' ')),
+                f'Hi {order.customer.username}, Your order status at this point is: ' + str(serializer.data['order_status'].lower().replace('_', ' ')),
                 'felixdecoder2020@gmail.com',
                 [order.customer.email]
             )
+            
             return Response({"status": True, "message": "Order status updated successfuly", "data": serializer.data}, status=status.HTTP_200_OK)
+        
         return Response(status=status.HTTP_400_BAD_REQUEST,data=serializer.errors)
 
 
