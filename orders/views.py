@@ -13,6 +13,8 @@ import random
 from drf_yasg.utils import swagger_auto_schema
 from django.core.mail import send_mail 
 from orders.services import OrderService, PaystackService
+from rest_framework.pagination import PageNumberPagination
+from orders.paginations import CustomPagination
 
 # Create your views here.
 User = get_user_model()
@@ -57,16 +59,18 @@ class VerifyPayment(generics.GenericAPIView):
         Transaction.objects.filter(ref=transaction).update(status=response['data']['status'])
         return Response({"status": False, "message": "Verification Failed"}, status=status.HTTP_400_BAD_REQUEST)
 
-class OrderListView(generics.GenericAPIView):
+
+class OrderListView(generics.ListAPIView):
     serializer_class = OrderSerializer
     queryset = Order.objects.all()
     permission_classes = [IsAdminUser]
+    pagination_class = PageNumberPagination
     
-    @swagger_auto_schema(operation_summary="View all orders")
-    def get(self, request):
-        orders = Order.objects.all()
-        serializers = self.serializer_class(instance=orders, many=True)
-        return Response({"status": True, "message": "Orders retreived successfully", "data": serializers.data})
+    # @swagger_auto_schema(operation_summary="View all orders")
+    # def get(self, request):
+    #     orders = Order.objects.all()
+    #     serializers = self.serializer_class(instance=orders, many=True)
+    #     return Response({"status": True, "message": "Orders retreived successfully", "data": serializers.data})
     
 class OrderDetailView(generics.GenericAPIView):
     serializer_class = OrderDetailSerializer
