@@ -153,6 +153,6 @@ AUTH_USER_MODEL = 'authentication.User'
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 EMAIL_HOST = 'smtp.mailtrap.io'
-EMAIL_HOST_USER = 'e7280e6fcb6d52'
-EMAIL_HOST_PASSWORD = '4db637d8542107'
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = '2525'

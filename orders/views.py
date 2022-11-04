@@ -154,8 +154,6 @@ class UpdateOrderStatus(generics.GenericAPIView):
         order = get_object_or_404(Order, pk=order_id)
         transaction_status=order.transaction.status
        
-        print(order.customer.email)
-       
         if transaction_status !='success':
             return Response({"status": False, "message": "You cannot update an order status whose transaction is pending"}, status=status.HTTP_400_BAD_REQUEST)
         
