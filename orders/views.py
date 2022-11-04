@@ -12,6 +12,7 @@ import requests
 import random
 from drf_yasg.utils import swagger_auto_schema
 from django.core.mail import send_mail 
+from orders.services import OrderService, PaystackService
 
 # Create your views here.
 User = get_user_model()
@@ -23,68 +24,10 @@ class OrderCreate(generics.GenericAPIView):
     
     @swagger_auto_schema(operation_summary="Add new order")
     def post(self, request):
-        request_data = request.data
-        items = request_data.pop('item')
         
-        transaction_ref = random.randint(10**12, 10**13 - 1)
+        order = OrderService.create_order(self, request)
        
-       #Create a transaction and generate transaction ref
-        transaction = Transaction.objects.create(
-            customer=request.user,
-            ref="PIZ" + str(transaction_ref),
-            type='pizza-payment',
-            payment_type='paystack',
-            currency='NGN'
-        )
-        
-         #create a delivery address for the order
-        delivery_address = DeliveryAddress.objects.create(
-            phone_number=request_data['phone_number'],
-            address_line_1=request_data['address_line_1'],
-            address_line_2=request_data['address_line_2'],
-            contact_name=request_data['contact_name'],
-            city=request_data['city'],
-           )
-        
-        #Create an order for the customer
-        order = Order.objects.create(
-               customer=request.user,
-               deliveryaddress=delivery_address,
-               transaction=transaction,
-               total_amount=request_data['total_amount']
-           )
-        
-        #Loop through the list of order items and save in db
-        for item in items:
-            try:
-                product = Product.objects.get(id=item['product_id'])
-                quantity = item['quantity']
-                OrderItem.objects.create(
-                order=order,
-                product=product,
-                quantity=quantity ,
-                price=product.price
-            )
-            except Product.DoesNotExist:
-                return Response({"status": False, "message": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
-             
-        url = 'https://api.paystack.co/transaction/initialize'
-        
-        headers = {"authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}"}
-        
-        data = requests.post(
-            url, headers=headers, 
-            data={
-            "amount": request_data['total_amount'] * 100, 
-            "email": request.user.email, 
-            "reference": "PIZ" + str(transaction_ref),
-            "callback_url": "http://localhost:8000/orders/verify-payment"
-            })
-        
-        response = data.json()
-        
-        if response['status'] == False:
-            return Response(response)
+        response = PaystackService.pay(self, request, order.transaction.ref)
         
         authorization_url=response['data']['authorization_url']
             
@@ -103,24 +46,15 @@ class VerifyPayment(generics.GenericAPIView):
             return Response({"status": False, "message": "Invalid payment reference"}, status=status.HTTP_400_BAD_REQUEST)
         
         transaction = Transaction.objects.get(ref=reference)
-            
-        url = f'https://api.paystack.co/transaction/verify/{transaction}'
-           
-        headers = {"authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}"}
-            
-        data = requests.get(url, headers=headers)
-            
-        response = data.json()
-            
-        if response['status'] == False:
-            return Response(response)
-            
+       
+        response = PaystackService.verify_payment(self, request)
+      
         if response['data']['status'] == 'success':
                 
-            Transaction.objects.filter(ref=reference).update(status=response['data']['status'])
+            Transaction.objects.filter(ref=transaction).update(status=response['data']['status'])
             return Response(response, status=status.HTTP_200_OK)
             
-        Transaction.objects.filter(ref=reference).update(status=response['data']['status'])
+        Transaction.objects.filter(ref=transaction).update(status=response['data']['status'])
         return Response({"status": False, "message": "Verification Failed"}, status=status.HTTP_400_BAD_REQUEST)
 
 class OrderListView(generics.GenericAPIView):
