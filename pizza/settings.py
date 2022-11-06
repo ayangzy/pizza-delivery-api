@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "authentication.apps.AuthenticationConfig",
     "orders.apps.OrdersConfig",
+    "products.apps.ProductsConfig",
     
     
     #Third party packages
