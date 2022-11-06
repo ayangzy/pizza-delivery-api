@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from cloudinary.models import CloudinaryField
 # Create your models here.
 
 User=get_user_model()
@@ -16,12 +17,18 @@ class Product(models.Model):
      size = models.CharField(max_length=40, choices=PIZZA_SIZES)
      stock=models.PositiveIntegerField()
      description=models.TextField(null=True, blank=True)
-     image=models.ImageField(null=True, blank=True)
+     image=CloudinaryField(null=True, blank=True)
      created_at=models.DateTimeField(auto_now_add=True)
      updated_at=models.DateTimeField(auto_now=True)
      
      def __str__(self):
          return self.flavour
+     
+     @property
+     def image_url(self):
+         return (
+             f"https://res.cloudinary.com/logic360/image/upload/v1667735057/{self.image}"
+             )
      
      
 class Transaction(models.Model):

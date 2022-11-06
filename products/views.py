@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework  import status
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.pagination import PageNumberPagination
-from django.shortcuts import get_object_or_404
+from rest_framework.parsers import MultiPartParser
 
 
 class ProductCreateListView(generics.GenericAPIView):
@@ -39,6 +39,7 @@ class ProductCreateListView(generics.GenericAPIView):
     
 class ProductDetailView(generics.GenericAPIView):
     serializer_class = ProductSerializer
+    parser_classes = (MultiPartParser)
     permission_classes = [IsAdminUser]
     
     @swagger_auto_schema(operation_summary="View the detail of a product by its ID")
