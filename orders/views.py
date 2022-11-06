@@ -36,7 +36,7 @@ class OrderCreate(generics.GenericAPIView):
         return Response({"status": True, "message": "Order created successfully", "data": {"authorization_url": authorization_url}}, status=status.HTTP_201_CREATED)
     
 class VerifyPayment(generics.GenericAPIView):
-    
+    serializer_class = OrderSerializer
     @swagger_auto_schema(operation_summary="Verify transaction payment")
     def get(self,request):
         
