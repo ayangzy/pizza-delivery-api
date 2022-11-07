@@ -1,20 +1,16 @@
-from rest_framework import generics
 from products.serializers import ProductSerializer
 from orders.models import Product
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
-from rest_framework  import status
+from rest_framework  import status, generics
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import MultiPartParser
-from rest_framework import filters
-from django_filters.rest_framework import DjangoFilterBackend
 
 
 class ProductCreateListView(generics.ListCreateAPIView):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
-    #permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]
     
     @swagger_auto_schema(operation_summary="Get all products")
     def get_queryset(self):
@@ -24,19 +20,7 @@ class ProductCreateListView(generics.ListCreateAPIView):
             queryset = queryset.filter(size=size)
         return queryset
    
-    # @swagger_auto_schema(operation_summary="Get all products")
-    # def get(self, request):
         
-    #     products = Product.objects.all().order_by('-id')
-        
-    #     paginator = PageNumberPagination()
-    #     paginator.page_size = 10
-    #     result_page = paginator.paginate_queryset(products,request)
-        
-    #     serializer = self.serializer_class(result_page, many=True)
-    #     return paginator.get_paginated_response(serializer.data)
-        
-    
     @swagger_auto_schema(operation_summary="Create a new product")
     def post(self, request):
         request_data = request.data
