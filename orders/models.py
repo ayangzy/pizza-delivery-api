@@ -26,9 +26,10 @@ class Product(models.Model):
      
      @property
      def image_url(self):
-         return (
-             f"https://res.cloudinary.com/logic360/image/upload/v1667735057/{self.image}"
-             )
+         if not self.image:
+             return ""
+         return f"https://res.cloudinary.com/logic360/image/upload/v1667735057/{self.image}"
+         
      
      
 class Transaction(models.Model):
