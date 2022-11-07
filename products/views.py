@@ -7,16 +7,21 @@ from rest_framework  import status
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import MultiPartParser
+from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 class ProductCreateListView(generics.GenericAPIView):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
     permission_classes = [IsAdminUser]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['size']
+    search_fields = ['flavour']
    
     @swagger_auto_schema(operation_summary="Get all products")
     def get(self, request):
-        products = Product.objects.all()
+        products = Product.objects.all().order_by('-id')
         
         paginator = PageNumberPagination()
         paginator.page_size = 10

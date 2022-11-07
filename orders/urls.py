@@ -9,5 +9,6 @@ urlpatterns = [
     path('order-status/<int:order_id>/',  UpdateOrderStatus.as_view(), name='order_status'),
     path('user/<int:user_id>/orders', UserOrdersView.as_view(), name='user_orders'),
     path('user/<int:user_id>/order/<int:order_id>/', UsersOrderDetailView.as_view(), name='users_order'),
-    path('verify-payment', VerifyPayment.as_view(), name='verify_payment')
+    path('verify-payment', VerifyPayment.as_view(), name='verify_payment'),
+    path('user/order-history', UserOrderHistory.as_view(), name='user_order_history')
 ]

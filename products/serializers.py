@@ -19,6 +19,7 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = '__all__'
         
+        
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation.pop("image")

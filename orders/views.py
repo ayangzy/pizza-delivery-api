@@ -68,7 +68,7 @@ class OrderListView(generics.ListAPIView):
     
     @swagger_auto_schema(operation_summary="View all orders")
     def get(self, request):
-        orders = Order.objects.all()
+        orders = Order.objects.all().order_by('-id')
         
         paginator = PageNumberPagination()
         paginator.page_size = 10
@@ -155,6 +155,18 @@ class UsersOrderDetailView(generics.GenericAPIView):
         serializer = self.serializer_class(instance=order)
         
         return Response({"status": True, "message": "User order retreived successfully", "data": serializer.data}, status=status.HTTP_200_OK)
+    
+class UserOrderHistory(generics.GenericAPIView):
+    serializer_class = OrderSerializer
+    queryset = Order.objects.all()
+    permission_classes = [IsAuthenticated]
+    
+    @swagger_auto_schema(operation_summary="Customer order history")
+    def get(self, request):
+        user = request.user
+        orders = user.order_set.all()
+        serializer = self.serializer_class(instance=orders, many=True)
+        return Response({"status": True, "message": "User order history retreived successfully", "data": serializer.data}, status=status.HTTP_200_OK)
 
         
     
