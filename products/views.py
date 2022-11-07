@@ -11,24 +11,30 @@ from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 
 
-class ProductCreateListView(generics.GenericAPIView):
+class ProductCreateListView(generics.ListCreateAPIView):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
-    permission_classes = [IsAdminUser]
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['size']
-    search_fields = ['flavour']
-   
+    #permission_classes = [IsAdminUser]
+    
     @swagger_auto_schema(operation_summary="Get all products")
-    def get(self, request):
-        products = Product.objects.all().order_by('-id')
+    def get_queryset(self):
+        queryset = Product.objects.all().order_by('-id')
+        size = self.request.query_params.get('size', None)
+        if size is not None:
+            queryset = queryset.filter(size=size)
+        return queryset
+   
+    # @swagger_auto_schema(operation_summary="Get all products")
+    # def get(self, request):
         
-        paginator = PageNumberPagination()
-        paginator.page_size = 10
-        result_page = paginator.paginate_queryset(products,request)
+    #     products = Product.objects.all().order_by('-id')
         
-        serializer = self.serializer_class(result_page, many=True)
-        return paginator.get_paginated_response(serializer.data)
+    #     paginator = PageNumberPagination()
+    #     paginator.page_size = 10
+    #     result_page = paginator.paginate_queryset(products,request)
+        
+    #     serializer = self.serializer_class(result_page, many=True)
+    #     return paginator.get_paginated_response(serializer.data)
         
     
     @swagger_auto_schema(operation_summary="Create a new product")

@@ -14,8 +14,8 @@ from drf_yasg.utils import swagger_auto_schema
 from django.core.mail import send_mail 
 from orders.services import OrderService, PaystackService
 from rest_framework.pagination import PageNumberPagination
-from orders.paginations import CustomPagination
-
+from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
 # Create your views here.
 User = get_user_model()
 
@@ -67,16 +67,24 @@ class OrderListView(generics.ListAPIView):
     pagination_class = PageNumberPagination
     
     @swagger_auto_schema(operation_summary="View all orders")
-    def get(self, request):
-        orders = Order.objects.all().order_by('-id')
+    def get_queryset(self):
+        queryset = Order.objects.all().order_by('-id')
+        order_status = self.request.query_params.get('order_status', None)
+        if order_status is not None:
+            queryset = queryset.filter(order_status=order_status)
+        return queryset
+    
+    # @swagger_auto_schema(operation_summary="View all orders")
+    # def get(self, request):
+    #     orders = Order.objects.all().order_by('-id')
         
-        paginator = PageNumberPagination()
-        paginator.page_size = 10
-        result_page = paginator.paginate_queryset(orders,request)
+    #     paginator = PageNumberPagination()
+    #     paginator.page_size = 10
+    #     result_page = paginator.paginate_queryset(orders,request)
         
-        serializer = self.serializer_class(result_page, many=True)
+    #     serializer = self.serializer_class(result_page, many=True)
         
-        return paginator.get_paginated_response(serializer.data)
+    #     return paginator.get_paginated_response(serializer.data)
        
     
 class OrderDetailView(generics.GenericAPIView):
