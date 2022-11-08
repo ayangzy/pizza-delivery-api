@@ -171,8 +171,8 @@ AUTH_USER_MODEL = 'authentication.User'
 
 MEDIA_URL = '/images/'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
-
+#MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
+STATIC_ROOT=BASE_DIR / 'staticfiles'
 # email config
 
 EMAIL_HOST = 'smtp.gmail.com'
