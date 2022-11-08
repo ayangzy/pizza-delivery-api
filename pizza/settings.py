@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "products.apps.ProductsConfig",
     
     
+    
     #Third party packages
     "rest_framework",
     "phonenumber_field",
@@ -173,3 +174,12 @@ EMAIL_HOST = 'smtp.mailtrap.io'
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = '2525'
+
+
+DJOSER = {
+    'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
+    'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
+    'ACTIVATION_URL': '#/activate/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': True,
+    'SERIALIZERS': {}, 
+}
