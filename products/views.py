@@ -33,8 +33,9 @@ class ProductCreateListView(generics.ListCreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class ProductDetailView(generics.GenericAPIView):
+    queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    parser_classes = (MultiPartParser)
+    #parser_classes = (MultiPartParser)
     permission_classes = [IsAdminUser]
     
     @swagger_auto_schema(operation_summary="View the detail of a product by its ID")
