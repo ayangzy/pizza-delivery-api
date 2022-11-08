@@ -20,7 +20,7 @@ DEBUG = config('DEBUG', cast=bool)
 PAYSTACK_SECRET_KEY = config('PAYSTACK_SECRET_KEY')
 PAYSTACK_BASE_URL = config('PAYSTACK_BASE_URL')
 
-ALLOWED_HOSTS = ["django-pizza-delivery-apis.herokuapp.com", "127.0.0.1"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
