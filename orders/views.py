@@ -4,12 +4,8 @@ from rest_framework import status
 from rest_framework import generics
 from orders.serializers import *
 from orders.models import*
-from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser, IsAuthenticated, AllowAny
-from django.conf import settings
-import requests
-import random
 from drf_yasg.utils import swagger_auto_schema
 from django.core.mail import send_mail 
 from orders.services import OrderService, PaystackService

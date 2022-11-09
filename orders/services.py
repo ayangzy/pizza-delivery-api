@@ -1,6 +1,6 @@
 from orders.models import*
 import random
-from rest_framework.exceptions import NotFound, bad_request, APIException
+from rest_framework.exceptions import NotFound, APIException
 from django.conf import settings
 import requests
 
