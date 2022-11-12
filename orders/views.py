@@ -23,14 +23,13 @@ class OrderCreate(generics.GenericAPIView):
     @swagger_auto_schema(operation_summary="Add new order")
     def post(self, request):
         
-        #order = OrderService.create_order(self, request)
-        
+        order = OrderService.create_order(self, request)
        
-        #response = PaystackService.pay(self, request, order.transaction.ref)
+        response = PaystackService.pay(self, request, order.transaction.ref)
         
-        #authorization_url=response['data']['authorization_url']
+        authorization_url=response['data']['authorization_url']
             
-        return Response({"status": True, "message": "Order created successfully"}, status=status.HTTP_201_CREATED)
+        return Response({"status": True, "message": "Order created successfully", "data": {"authorization_url": authorization_url}}, status=status.HTTP_201_CREATED)
     
 class VerifyPayment(generics.GenericAPIView):
     serializer_class = OrderSerializer

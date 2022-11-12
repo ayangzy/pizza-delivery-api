@@ -34,8 +34,8 @@ class Product(models.Model):
      
 class Transaction(models.Model):
     customer=models.ForeignKey(User,on_delete=models.CASCADE)
-    ref=models.CharField(max_length=10)
-    status=models.CharField(max_length=10,default='Pending')
+    ref=models.CharField(max_length=20)
+    status=models.CharField(max_length=20,default='Pending')
     type=models.CharField(max_length=20,null=True,blank=True)
     payment_type=models.CharField(max_length=20)
     currency=models.CharField(max_length=20,null=True,blank=True)
