@@ -18,6 +18,7 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', cast=bool)
 
 PAYSTACK_SECRET_KEY = config('PAYSTACK_SECRET_KEY')
+CALLBACK_URL=config('CALLBACK_URL')
 
 ALLOWED_HOSTS = ["*"]
 

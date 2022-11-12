@@ -67,7 +67,7 @@ class PaystackService:
             "amount": request.data['total_amount'] * 100, 
             "email": request.user.email, 
             "reference": ref,
-            "callback_url": "http://localhost:8000/orders/verify-payment"
+            "callback_url": {settings.CALLBACK_URL}
             }
         
         response = requests.post(url, headers=headers, data=data).json()
