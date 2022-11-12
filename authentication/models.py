@@ -34,7 +34,7 @@ class User(AbstractUser,PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
-    #objects = UserManager()
+    objects = UserManager()
     
     REQUIRED_FIELDS=['username','phone_number']
     USERNAME_FIELD='email'
