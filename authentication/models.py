@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser, PermissionsMixin
 from django.contrib.auth.base_user import BaseUserManager
 from phonenumber_field.modelfields import PhoneNumberField
 from django.utils.translation import gettext as _
+from django.contrib.auth.models import User
 # Create your models here.
 
 class UserManager(BaseUserManager):
@@ -43,3 +44,11 @@ class User(AbstractUser,PermissionsMixin):
 
     def __str__(self):
         return self.username
+    
+class PasswordReset(models.Model):
+    user=models.ForeignKey(User, on_delete=models.CASCADE)
+    token=models.CharField(max_length=10)
+    created_at=models.DateTimeField(auto_now_add=True)
+    updated_at=models.DateTimeField(auto_now=True)
+    
+    
