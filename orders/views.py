@@ -23,8 +23,8 @@ class OrderCreate(generics.GenericAPIView):
     @swagger_auto_schema(operation_summary="Add new order")
     def post(self, request):
         
-        order = OrderService.create_order(self, request)
-        print(order)
+        #order = OrderService.create_order(self, request)
+        
        
         #response = PaystackService.pay(self, request, order.transaction.ref)
         
