@@ -2,11 +2,12 @@ from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.response import Response
 from authentication.models import User, PasswordReset
-from authentication.serializers import UserCreationSerializer, PasswordResetSerializer
+from authentication.serializers import *
 from drf_yasg.utils import swagger_auto_schema
 import random
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
+from rest_framework.decorators import api_view
 
 class UserCreateView(generics.GenericAPIView):
     serializer_class = UserCreationSerializer
@@ -23,9 +24,8 @@ class UserCreateView(generics.GenericAPIView):
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     
-class PasswordReset(generics.GenericAPIView):
+class PasswordResetView(generics.GenericAPIView):
     serializer_class = PasswordResetSerializer
-    queryset = PasswordReset.objects.all()
     
     def post(self, request):
         request_data = request.data
@@ -51,6 +51,41 @@ class PasswordReset(generics.GenericAPIView):
         
         except User.DoesNotExist:
             return Response({"status": False, "message": f"User with the email {request_data['email']} not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+@api_view(['PUT'])
+def reset_password(request):
+    request_data = request.data
+    email = request_data['email']
+    try:
+        user = User.objects.get(email=email)
+        userToken = PasswordReset.objects.get(email=user.email)
+        
+        if not request_data['token'] == userToken.token:
+             return Response({"status": False, "message": "Invalid password reset token"}, status=status.HTTP_400_BAD_REQUEST)
+         
+        if request_data['new_password']  == '':
+            return Response({"status": False, "message": "Password field cannot be empty"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if request_data['new_confirm_password'] == '':
+              return Response({"status": False, "message": "The new password field cannot be empty"}, status=status.HTTP_400_BAD_REQUEST)
+          
+        if request_data['new_password'] !=request_data['new_confirm_password']:
+           return Response({"status": False, "message": "Password does not match"}, status=status.HTTP_400_BAD_REQUEST)
+       
+        user.set_password(request_data['new_password'])
+        user.save()
+        userToken.delete()
+        return Response({"status": True, "message": "password reset successully"}, status=status.HTTP_200_OK)
+    
+    except PasswordReset.DoesNotExist:
+       return Response({"status": False, "message": "Invalid Password reset token"}, status=status.HTTP_400_BAD_REQUEST)
+   
+
+       
+    
+       
+        
+   
        
         
         
