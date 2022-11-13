@@ -2,6 +2,7 @@ from rest_framework import serializers
 from authentication.models import User
 from django.contrib.auth.hashers import make_password
 from phonenumber_field.modelfields import PhoneNumberField
+from authentication.models import PasswordReset
 
 class UserCreationSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=40)
@@ -31,3 +32,19 @@ class UserCreationSerializer(serializers.ModelSerializer):
         user.password=make_password(validated_data.get('password'))
         user.save()
         return user
+    
+class PasswordResetSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(max_length=50)
+    class Meta:
+        model = PasswordReset
+        fields = '__all__'
+        
+    def create(self, validated_data):
+       password_reset = PasswordReset.objects.update_or_create(
+           #filter on the unique value of `email`
+           email=validated_data.get('email'),
+           # update these fields, or create a new object with these values
+           defaults= {'token': validated_data.get('token')}
+       )
+       return password_reset
+   
