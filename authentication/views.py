@@ -101,6 +101,12 @@ def change_password(request):
     user.set_password(request_data['new_password'])
     user.save()
     return Response({"status": True, "message": "Password updated succesfully"}, status=status.HTTP_200_OK)
+
+class ChangePasswordView(generics.UpdateAPIView):
+    serializer_class = ChangePasswordSerializer
+    queryset = User.objects.all()
+    permission_classes = [IsAuthenticated]
+   
     
     
     
