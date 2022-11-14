@@ -27,6 +27,7 @@ class UserCreateView(generics.GenericAPIView):
 class PasswordResetView(generics.GenericAPIView):
     serializer_class = PasswordResetSerializer
     
+    @swagger_auto_schema(operation_summary="Forgot password")
     def post(self, request):
         request_data = request.data
         token = random.randint(1000,9999)

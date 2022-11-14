@@ -33,6 +33,7 @@ class OrderCreate(generics.GenericAPIView):
     
 class VerifyPayment(generics.GenericAPIView):
     serializer_class = OrderSerializer
+    queryset = Transaction.objects.all()
     @swagger_auto_schema(operation_summary="Verify transaction payment")
     def get(self,request):
         
