@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.response import Response
 from authentication.models import User, PasswordReset
@@ -7,7 +6,8 @@ from drf_yasg.utils import swagger_auto_schema
 import random
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 
 class UserCreateView(generics.GenericAPIView):
     serializer_class = UserCreationSerializer
@@ -80,6 +80,30 @@ def reset_password(request):
     
     except PasswordReset.DoesNotExist:
        return Response({"status": False, "message": "Invalid Password reset token"}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def change_password(request):
+    request_data = request.data
+    user = User.objects.get(username=request.user)
+    if request_data['old_password'] == '':
+        return Response({"status": False, "message": "The old password field cannot be blank"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    if request_data['new_password'] == '':
+        return Response({"status": False, "message": "The old password field cannot be blank"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    if not user.check_password(request_data['old_password']):
+        return Response({"status": False, "message": "Password does not match"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    if user.check_password(request_data['new_password']):
+         return Response({"status": False, "message": "You have used this password before, kindly use a different password"}, status=status.HTTP_400_BAD_REQUEST)
+     
+    user.set_password(request_data['new_password'])
+    user.save()
+    return Response({"status": True, "message": "Password updated succesfully"}, status=status.HTTP_200_OK)
+    
+    
+    
    
 
        
